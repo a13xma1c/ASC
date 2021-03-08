@@ -140,7 +140,7 @@ class CoffeeFactory(Thread):
             if not self.queue.full():
                 new_coffee = coffee_list[random.randint(0, 2)].set_size(size_list[random.randint(0, 2)])
                 self.queue.put(new_coffee)
-                print("Making a %s" % new_coffee.get_message())
+                print("Making a %s\n" % new_coffee.get_message())
                 time.sleep(random.random())
 
 
@@ -154,18 +154,31 @@ class User(Thread):
         while True:
             if not self.queue.empty():
                 item = self.queue.get()
-                print("%s is drinking a %s" % (self.name, item.get_message()))
+                print("%s is drinking a %s\n" % (self.name, item.get_message()))
                 time.sleep(random.random())
 
 
 if __name__ == '__main__':
     dist = Distributor(int(sys.argv[1]))
-    bar = CoffeeFactory(dist)
-    dev1 = User("Alex", dist)
-    dev2 = User("Bob", dist)
 
-    bar.start()
-    time.sleep(5)
-    dev1.start()
+    nr_prod = int(input("Number of baristas:"))
+    nr_dev = int(input("Number of developers:"))
+
+    baristas = []
+    devs = []
+    for i in range(0, nr_prod):
+        bar = CoffeeFactory(dist)
+        baristas.append(bar)
+
+    for i in range(0, nr_dev):
+        dev = User("Alex %s-lescu" % i, dist)
+        devs.append(dev)
+
+    for b in baristas:
+        b.start()
+
     time.sleep(2)
-    dev2.start()
+
+    for d in devs:
+        d.start()
+
