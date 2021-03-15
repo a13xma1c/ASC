@@ -1,6 +1,7 @@
 from time import sleep
 from threading import enumerate, Event, Thread
 
+
 class Master(Thread):
     def __init__(self, max_work, work_available, result_available):
         Thread.__init__(self, name="Master")
@@ -16,16 +17,20 @@ class Master(Thread):
             # Generate work
             self.work = i
             # Notify worker
+            print(self.name)
             self.work_available.set()
             self.work_available.clear()
             # Get result
+            print(self.name)
             self.result_available.wait()
             if self.get_work() + 1 != self.worker.get_result():
                 print("oops")
             print("%d -> %d" % (self.work, self.worker.get_result()))
+            print(self.name)
 
     def get_work(self):
         return self.work
+
 
 class Worker(Thread):
     def __init__(self, terminate, work_available, result_available):
@@ -40,18 +45,22 @@ class Worker(Thread):
     def run(self):
         while True:
             # Wait for work
+            print(self.name)
             self.work_available.wait()
             if terminate.is_set():
                 break
             # Generate result
+            print(self.name)
             self.result = self.master.get_work() + 1
-            sleep(0.000001)
+            sleep(0.1)
             # Notify master
+            print(self.name)
             self.result_available.set()
             self.result_available.clear()
 
     def get_result(self):
         return self.result
+
 
 if __name__ == "__main__":
     # Create shared objects
@@ -61,7 +70,7 @@ if __name__ == "__main__":
 
     # Start worker and master
     w = Worker(terminate, work_available, result_available)
-    m = Master(1000, work_available, result_available)
+    m = Master(100, work_available, result_available)
     w.set_master(m)
     m.set_worker(w)
     w.start()
