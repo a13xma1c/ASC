@@ -50,10 +50,10 @@ int main(int argc, char* argv[])
     // scalati vitezele tuturor particulelor cu 0.5
     //   -> folositi un cast la int8_t* pentru a parcurge vitezele fara
     //      a fi nevoie sa accesati individual componentele v_x, v_y, si v_z
-    for (long i = 0; i < n * n; i++) {
-        vect[i].v_x = 0.5 * vect[i].v_x;
-        vect[i].v_y = 0.5 * vect[i].v_y;
-        vect[i].v_z = 0.5 * vect[i].v_z;
+    int8_t *p = (int8_t *)vect;
+    for (long i = 0; i < 3 * n * n; i++) {
+        *p = 0.5 * (*p);
+        p++;
     }
     // compute max particle speed
     float max_speed = 0.0f;
